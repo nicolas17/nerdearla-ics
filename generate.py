@@ -25,6 +25,7 @@ class Talk:
     time_start: datetime.time = None
     time_end: datetime.time = None
     description: str = None
+    url: str = None
 
 DAYS = [datetime.date(2020, 10, d) for d in (20,21,22,23,24)]
 
@@ -66,6 +67,7 @@ def get_talk(url):
         talk = Talk()
 
         talk.uid = re.match('.*/session/([^/]+)/?$', url).group(1)
+        talk.url = url
 
         title_elems = soup.select('div#page_caption div.page_title_content h3')
         if len(title_elems) == 1:
@@ -97,6 +99,7 @@ ART = datetime.timezone(-datetime.timedelta(hours=3))
 def make_vevent(talk):
     event = icalendar.Event()
     event.add('uid', talk.uid + talk.container + '-2020@nerdear.la')
+    event.add('url', talk.url)
     event.add('dtstamp', datetime.datetime.utcnow())
     event.add('dtstart', datetime.datetime.combine(talk.day, talk.time_start, ART))
     if talk.time_end:
