@@ -36,7 +36,9 @@ def get_talks():
         soup = BeautifulSoup(html_doc, 'html.parser')
 
         day_elems = soup.find_all('ul', class_='scheduleday_wrapper')
-        for day_elem in day_elems:
+        # After the talk schedule, there is now the workshop schedule (hidden) and it breaks extraction;
+        # take only the first 15 elements (5 days x 3 tracks).
+        for day_elem in day_elems[0:15]:
 
             day_title_elem = day_elem.find('li', class_='scheduleday_title').find('div', class_='scheduleday_title_content')
             day_title = next(day_title_elem.stripped_strings)
