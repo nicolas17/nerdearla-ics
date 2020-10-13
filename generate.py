@@ -70,7 +70,7 @@ def get_talks():
                     talk.day = DAYS[day_num-1]
                     log.warning("couldn't extract day, using %s", talk.day)
                 if not talk.container:
-                    talk.container = container
+                    talk.container = "Container "+container
                     log.warning("couldn't extract container, using %s", container)
 
                 yield talk
@@ -104,7 +104,7 @@ def get_talk(url):
                     talk.time_end = datetime.time(int(m.group(3)), int(m.group(4)))
 
             if tagline_info:
-                m = re.match('(\d+) de [Oo]ctubre [-–] Container ([A-Za-z]+)', tagline_info)
+                m = re.match('(\d+) de [Oo]ctubre [-–] (Containers? [A-Za-z ]+)', tagline_info)
                 if m:
                     talk.day = datetime.date(2020, 10, int(m.group(1)))
                     talk.container = m.group(2)
@@ -129,7 +129,7 @@ def make_vevent(talk):
     if talk.time_end:
         event.add('dtend', datetime.datetime.combine(talk.day, talk.time_end, ART))
 
-    event.add('location', f'Container {talk.container}')
+    event.add('location', talk.container)
     event.add('summary', talk.title)
     if talk.description != '':
         event.add('description', talk.description)
