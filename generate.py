@@ -93,6 +93,13 @@ def get_talk(url):
                 if m.group(4):
                     talk.time_end = datetime.time(int(m.group(3)), int(m.group(4)))
 
+            if tagline_info:
+                m = re.match('(\d+) de [Oo]ctubre [-–] Container ([A-Za-z]+)', tagline_info)
+                if m:
+                    talk.day = datetime.date(2020, 10, int(m.group(1)))
+                    talk.container = m.group(2)
+
+
         content_elems = soup.select('div#page_content_wrapper div.post_content_wrapper p')
         content_paragraphs = []
         for pelem in content_elems:
