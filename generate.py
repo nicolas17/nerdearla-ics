@@ -8,6 +8,8 @@ import sys
 import datetime
 import re
 import uuid
+import logging
+
 import requests
 from bs4 import BeautifulSoup
 import icalendar
@@ -16,6 +18,10 @@ session = requests.session()
 session.headers.update({'User-Agent': 'NerdearlaICS/0.1 (+nicolas.alvarez@gmail.com)'})
 
 from dataclasses import dataclass
+
+logging.basicConfig()
+log = logging.getLogger('icsexport')
+log.setLevel(logging.DEBUG)
 
 @dataclass
 class Talk:
@@ -54,15 +60,19 @@ def get_talks():
                 assert title_elem
                 link_elem = title_elem.find('a')
 
-                if '/comienzo-' in link_elem['href']: continue
+                talk_url = link_elem['href']
+                if '/comienzo-' in talk_url: continue
 
-                talk = get_talk(link_elem['href'])
+                log.info("Parsing %s", talk_url)
+
+                talk = get_talk(talk_url)
                 if not talk.day:
                     talk.day = DAYS[day_num-1]
+                    log.warning("couldn't extract day, using %s", talk.day)
                 if not talk.container:
                     talk.container = container
+                    log.warning("couldn't extract container, using %s", container)
 
-                print(talk.url, file=sys.stderr)
                 yield talk
 
 def get_talk(url):
