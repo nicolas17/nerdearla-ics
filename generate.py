@@ -54,6 +54,8 @@ def get_talks():
                 assert title_elem
                 link_elem = title_elem.find('a')
 
+                if '/comienzo-' in link_elem['href']: continue
+
                 talk = get_talk(link_elem['href'])
                 if not talk.day:
                     talk.day = DAYS[day_num-1]
@@ -129,7 +131,6 @@ def filter_duplicates(talks):
     talk_ids_seen = set()
     for talk in talks:
         if talk.uid in talk_ids_seen: continue
-        if '/comienzo-' in talk.url: continue
         if 'to-be-announc' in talk.url: continue
         
         talk_ids_seen.add(talk.uid)
