@@ -129,8 +129,8 @@ def filter_duplicates(talks):
     talk_ids_seen = set()
     for talk in talks:
         if talk.uid in talk_ids_seen: continue
-        if talk.uid.startswith('comienzo-'): continue
-        if 'to-be-announc' in talk.uid: continue
+        if '/comienzo-' in talk.url: continue
+        if 'to-be-announc' in talk.url: continue
         
         talk_ids_seen.add(talk.uid)
         yield talk
