@@ -7,6 +7,7 @@
 import sys
 import datetime
 import re
+import uuid
 import requests
 from bs4 import BeautifulSoup
 import icalendar
@@ -28,6 +29,7 @@ class Talk:
     url: str = None
 
 DAYS = [datetime.date(2020, 10, d) for d in (20,21,22,23,24)]
+NERDEARLA_UUID = uuid.UUID('9292c69e-80e9-4d2f-9145-df69a71d9a62')
 
 def get_talks():
     r = session.get("https://nerdear.la/agenda")
@@ -58,7 +60,7 @@ def get_talks():
                 if not talk.container:
                     talk.container = container
 
-                print(talk.uid, file=sys.stderr)
+                print(talk.url, file=sys.stderr)
                 yield talk
 
 def get_talk(url):
@@ -68,7 +70,8 @@ def get_talk(url):
         soup = BeautifulSoup(html_doc, 'html.parser')
         talk = Talk()
 
-        talk.uid = re.match('.*/session/([^/]+)/?$', url).group(1)
+        talk_id = re.match('.*/session/([^/]+)/?$', url).group(1)
+        talk.uid = str(uuid.uuid5(NERDEARLA_UUID, talk_id))
         talk.url = url
 
         title_elems = soup.select('div#page_caption div.page_title_content h3')
@@ -100,7 +103,7 @@ ART = datetime.timezone(-datetime.timedelta(hours=3))
 
 def make_vevent(talk):
     event = icalendar.Event()
-    event.add('uid', talk.uid + talk.container + '-2020@nerdear.la')
+    event.add('uid', talk.uid + '@nerdear.la')
     event.add('url', talk.url)
     event.add('dtstamp', datetime.datetime.utcnow())
     event.add('dtstart', datetime.datetime.combine(talk.day, talk.time_start, ART))
