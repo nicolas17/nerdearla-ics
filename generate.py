@@ -105,7 +105,7 @@ def make_vevent(talk):
     event = icalendar.Event()
     event.add('uid', talk.uid + '@nerdear.la')
     event.add('url', talk.url)
-    event.add('dtstamp', datetime.datetime.utcnow())
+    event.add('dtstamp', datetime.datetime(2020,10,13))
     event.add('dtstart', datetime.datetime.combine(talk.day, talk.time_start, ART))
     if talk.time_end:
         event.add('dtend', datetime.datetime.combine(talk.day, talk.time_end, ART))
