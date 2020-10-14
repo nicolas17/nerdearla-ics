@@ -145,6 +145,9 @@ def make_ical(talks):
     cal = icalendar.Calendar()
     cal.add('prodid', 'NerdearlaICS/1.0')
     cal.add('version', '2.0')
+    cal.add('name', 'Agenda Nerdearla 2020') # RFC 7986
+    cal.add('x-wr-calname', 'Agenda Nerdearla 2020') # What iOS and Google Calendar actually support
+    cal.add('x-wr-calid', str(uuid.uuid5(NERDEARLA_UUID, "x-wr-calid")))
     for talk in talks:
         event = make_vevent(talk)
         cal.add_component(event)
