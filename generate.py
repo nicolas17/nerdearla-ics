@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import icalendar
 
 session = requests.session()
-session.headers.update({'User-Agent': 'NerdearlaICS/0.1 (+nicolas.alvarez@gmail.com)'})
+session.headers.update({'User-Agent': 'NerdearlaICS/1.0 (+nicolas.alvarez@gmail.com)'})
 
 from dataclasses import dataclass
 
