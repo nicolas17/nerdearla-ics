@@ -143,6 +143,8 @@ def make_vevent(talk):
 
 def make_ical(talks):
     cal = icalendar.Calendar()
+    cal.add('prodid', 'NerdearlaICS/1.0')
+    cal.add('version', '2.0')
     for talk in talks:
         event = make_vevent(talk)
         cal.add_component(event)
