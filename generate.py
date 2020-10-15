@@ -47,6 +47,7 @@ DEFAULT_LIVE_URL = LIVE_URLS['Container Rojo']
 
 def get_talks():
     r = session.get("https://nerdear.la/agenda")
+    urls_parsed = set()
     if r.status_code == 200:
         html_doc = r.text
         soup = BeautifulSoup(html_doc, 'html.parser')
@@ -71,6 +72,9 @@ def get_talks():
 
                 talk_url = link_elem['href']
                 if '/comienzo-' in talk_url: continue
+                if talk_url in urls_parsed:
+                    log.info("Already parsed %s, skipping", talk_url)
+                    continue
 
                 log.info("Parsing %s", talk_url)
 
@@ -78,6 +82,8 @@ def get_talks():
                 assert talk.day and talk.container
 
                 yield talk
+
+                urls_parsed.add(talk_url)
 
 def get_talk(url):
     r = session.get(url)
@@ -170,16 +176,7 @@ def make_ical(talks):
 
     return cal
 
-def filter_duplicates(talks):
-    talk_ids_seen = set()
-    for talk in talks:
-        if talk.uid in talk_ids_seen: continue
-        if 'to-be-announc' in talk.url: continue
-        
-        talk_ids_seen.add(talk.uid)
-        yield talk
-
-ical = make_ical(filter_duplicates(get_talks()))
+ical = make_ical(get_talks())
 
 sys.stdout.write(ical.to_ical().decode('utf8'))
 
