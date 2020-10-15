@@ -114,13 +114,6 @@ def get_talk(url):
                     talk.time_end = datetime.time(int(m.group(3)), int(m.group(4)))
 
             if tagline_info:
-                if talk_id == 'zarpale-la-data':
-                    if 'Cointainer' in tagline_info:
-                        log.warning("Fixing typo in zarpale-la-data")
-                        tagline_info = tagline_info.replace('Cointainer', 'Container')
-                    else:
-                        log.warning("Typo in zarpale-la-data was fixed; remove workaround")
-
                 m = re.match('(\d+) de [Oo]ctubre [-–] (Containers? [A-Za-z ]+|Keynote)', tagline_info)
                 if m:
                     talk.day = datetime.date(2020, 10, int(m.group(1)))
