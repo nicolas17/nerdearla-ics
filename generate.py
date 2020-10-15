@@ -37,6 +37,14 @@ class Talk:
 DAYS = [datetime.date(2020, 10, d) for d in (20,21,22,23,24)]
 NERDEARLA_UUID = uuid.UUID('9292c69e-80e9-4d2f-9145-df69a71d9a62')
 
+LIVE_URLS = {
+    'Container Rojo':  'https://nerdear.live/container-rojo',
+    'Container Verde': 'https://nerdear.live/container-verde',
+    'Container Azul':  'https://nerdear.live/container-azul'
+}
+
+DEFAULT_LIVE_URL = LIVE_URLS['Container Rojo']
+
 def get_talks():
     r = session.get("https://nerdear.la/agenda")
     if r.status_code == 200:
@@ -111,6 +119,11 @@ def get_talk(url):
                 if m:
                     talk.day = datetime.date(2020, 10, int(m.group(1)))
                     talk.container = m.group(2)
+                    if talk.container in LIVE_URLS:
+                        talk.live_url = LIVE_URLS[talk.container]
+                    else:
+                        log.warning("Using default live URL for container %r" % talk.container)
+                        talk.live_url = DEFAULT_LIVE_URL
                 else:
                     log.error("Failed to parse tagline_info! %r", tagline_info)
 
@@ -120,6 +133,9 @@ def get_talk(url):
         for pelem in content_elems:
             content_paragraphs.append('\n'.join(pelem.stripped_strings))
         talk.description = '\n\n'.join(content_paragraphs)
+
+        if talk.live_url:
+            talk.description = 'Escenario en vivo: {}\n\n{}'.format(talk.live_url, talk.description)
 
         return talk
 
