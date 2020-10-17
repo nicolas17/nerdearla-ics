@@ -57,12 +57,12 @@ def get_talks():
         # skip the first 4 elements.
         for day_elem in day_elems[4:]:
 
-            # This block is hopefully not necessary anymore
-            #day_title_elem = day_elem.find('li', class_='scheduleday_title').find('div', class_='scheduleday_title_content')
-            #day_title = next(day_title_elem.stripped_strings)
-            #m = re.match('Día (\d+) . Container ([ABC])', day_title)
-            #day_num = int(m.group(1))
-            #container = m.group(2)
+            # Parse day header in case get_talk fails to get the date from each talk's page
+            day_title_elem = day_elem.find('li', class_='scheduleday_title').find('div', class_='scheduleday_title_content')
+            day_title = next(day_title_elem.stripped_strings)
+            m = re.match('Día (\d+) . Container ([ABC])', day_title)
+            day_num = int(m.group(1))
+            container = m.group(2)
 
             talk_elems = day_elem.find_all('div', class_='session_content_wrapper')
             for talk_elem in talk_elems:
@@ -79,7 +79,10 @@ def get_talks():
                 log.info("Parsing %s", talk_url)
 
                 talk = get_talk(talk_url)
-                assert talk.day and talk.container
+                if not talk.day:
+                    talk.day = DAYS[day_num - 1]
+                    log.warning("get_talk didn't extract date, using %s", talk.day)
+                assert talk.container
 
                 yield talk
 
@@ -114,9 +117,10 @@ def get_talk(url):
                     talk.time_end = datetime.time(int(m.group(3)), int(m.group(4)))
 
             if tagline_info:
-                m = re.match('(\d+) de [Oo]ctubre [-–] (Containers? [A-Za-z ]+|Keynote)', tagline_info)
+                m = re.match('(?:(\d+) de [Oo]ctubre [-–] )?(Containers? [A-Za-z ,]+|Keynote)', tagline_info)
                 if m:
-                    talk.day = datetime.date(2020, 10, int(m.group(1)))
+                    if m.group(1):
+                        talk.day = datetime.date(2020, 10, int(m.group(1)))
                     talk.container = m.group(2)
                     if talk.container in LIVE_URLS:
                         talk.live_url = LIVE_URLS[talk.container]
