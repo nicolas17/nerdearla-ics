@@ -117,7 +117,7 @@ def get_talk(url):
                     talk.time_end = datetime.time(int(m.group(3)), int(m.group(4)))
 
             if tagline_info:
-                m = re.match('(?:(\d+) de [Oo]ctubre [-–] )?(Containers? [A-Za-z ,]+|Keynote)', tagline_info)
+                m = re.fullmatch('(?:(\d+) de [Oo]ctubre [-–] )?(Containers? [A-Za-z ,&]+|Keynote)', tagline_info)
                 if m:
                     if m.group(1):
                         talk.day = datetime.date(2020, 10, int(m.group(1)))
