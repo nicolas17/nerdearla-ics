@@ -129,6 +129,16 @@ def get_talk(url):
                         talk.live_url = DEFAULT_LIVE_URL
                 else:
                     log.error("Failed to parse tagline_info! %r", tagline_info)
+            else:
+                log.error("Missing tagline_info!")
+
+        if talk_id == 'documental-bias-sesgos-inconcientes':
+            if not tagline_info:
+                talk.container = 'Container Rojo'
+                talk.live_url = LIVE_URLS[talk.container]
+                log.warning("Using hardcoded %r", talk.container)
+            else:
+                log.warning("Bias documentary page has tagline_info now, remove workaround")
 
 
         content_elems = soup.select('div#page_content_wrapper div.post_content_wrapper p')
